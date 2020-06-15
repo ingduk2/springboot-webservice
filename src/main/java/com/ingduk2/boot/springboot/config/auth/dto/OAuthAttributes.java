@@ -2,6 +2,7 @@ package com.ingduk2.boot.springboot.config.auth.dto;
 
 import com.ingduk2.boot.springboot.domain.user.Role;
 import com.ingduk2.boot.springboot.domain.user.User;
+import javafx.beans.binding.ObjectBinding;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -27,11 +28,32 @@ public class OAuthAttributes {
 
     public static OAuthAttributes of(String registrationId, String userNameAttributeName,
                                      Map<String, Object> attributes){
+        System.out.println("=====================================");
+        System.out.println(registrationId);
+        System.out.println(userNameAttributeName);
+        System.out.println(attributes);
+        System.out.println("=====================================");
 
         if("naver".equals(registrationId)){
             return ofNaver("id", attributes);
+        }else if("facebook".equals(registrationId)){
+            return ofFaceBook("id", attributes);
         }
         return ofGoogle(userNameAttributeName, attributes);
+    }
+
+    private static OAuthAttributes ofFaceBook(String userNameAttributeName, Map<String, Object> attributes){
+
+        Map<String, Object> picture = (Map<String, Object>) attributes.get("picture");
+        Map<String, Object> data = (Map<String, Object>) picture.get("data");
+
+        return OAuthAttributes.builder()
+                .name((String) attributes.get("name"))
+                .email((String) attributes.get("email"))
+                .picture((String) data.get("url"))
+                .attributes(attributes)
+                .nameAttributeKey(userNameAttributeName).build();
+
     }
 
     private static OAuthAttributes ofNaver(String userNameAttributeName, Map<String, Object> attributes) {
